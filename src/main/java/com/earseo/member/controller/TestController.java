@@ -1,7 +1,7 @@
-package com.earseo.backend_member.controller;
+package com.earseo.member.controller;
 
-import com.earseo.backend_member.common.BaseResponse;
-import com.earseo.backend_member.entity.SampleEntity;
+import com.earseo.member.common.BaseResponse;
+import com.earseo.member.entity.SampleEntity;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

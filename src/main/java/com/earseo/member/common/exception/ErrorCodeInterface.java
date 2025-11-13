@@ -1,4 +1,4 @@
-package com.earseo.backend_member.common.exception;
+package com.earseo.member.common.exception;
 
 /**
  * Enum 기반 ErrorCode 관리 인터페이스

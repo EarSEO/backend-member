@@ -1,4 +1,4 @@
-package com.earseo.backend_member.common.exception;
+package com.earseo.member.common.exception;
 
 import lombok.Builder;
 import lombok.Getter;

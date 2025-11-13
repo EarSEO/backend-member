@@ -1,4 +1,4 @@
-package com.earseo.backend_member.entity;
+package com.earseo.member.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
