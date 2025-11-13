@@ -4,7 +4,14 @@ server:
 spring:
   application:
     name: backend-member
-
+  management:
+    endpoints:
+      web:
+        exposure:
+          include: prometheus,health,info
+    metrics:
+      tags:
+        application: ${spring.application.name}
 #  datasource:
 #    driver-class-name: org.postgresql.Driver
 #    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:userdb}
