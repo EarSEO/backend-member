@@ -31,7 +31,7 @@ public class Member extends BaseEntity{
     @Column(nullable = false)
     private Provider provider;
 
-    @Column(length = 50, nullable = false)
+    @Column(length = 50, nullable = false, unique = true)
     private String nickname;
 
     @Column(length = 255)
