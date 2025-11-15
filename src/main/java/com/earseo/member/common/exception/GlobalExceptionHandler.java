@@ -1,6 +1,6 @@
-package com.earseo.backend_member.common.exception;
+package com.earseo.member.common.exception;
 
-import com.earseo.backend_member.common.BaseResponse;
+import com.earseo.member.common.BaseResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;

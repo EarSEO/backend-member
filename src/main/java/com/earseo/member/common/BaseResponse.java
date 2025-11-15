@@ -1,4 +1,4 @@
-package com.earseo.backend_member.common;
+package com.earseo.member.common;
 
 public record BaseResponse<T>(
     String status,
