@@ -1,6 +1,7 @@
 package com.earseo.member.repository;
 
 import com.earseo.member.entity.Member;
+import com.earseo.member.entity.Provider;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
@@ -15,4 +16,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     // 닉네임 중복 확인
     boolean existsByNickname(String nickname);
+
+    Optional<Member> findByEmailAndProvider(String email, Provider provider);
 }
