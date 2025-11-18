@@ -6,7 +6,7 @@ import lombok.*;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "member")
+@Table(name = "member", schema = "member")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -31,7 +31,7 @@ public class Member extends BaseEntity{
     @Column(nullable = false)
     private Provider provider;
 
-    @Column(length = 50, nullable = false)
+    @Column(length = 50, nullable = false, unique = true)
     private String nickname;
 
     @Column(length = 255)
