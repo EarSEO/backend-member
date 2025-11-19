@@ -37,8 +37,9 @@ public class Member extends BaseEntity{
     @Column(length = 255)
     private String profileImage;
 
-    @Column(length = 6)
-    private String gender;
+    @Enumerated(EnumType.STRING)
+    @Column(length = 10)
+    private Gender gender;
 
     @Column
     private LocalDate birthdate;

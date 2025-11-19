@@ -19,28 +19,28 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-//    @Bean
-//    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-//        http
-//                .csrf(AbstractHttpConfigurer::disable)
-//                .httpBasic(AbstractHttpConfigurer::disable)
-//                .formLogin(AbstractHttpConfigurer::disable)
-//                .sessionManagement(session -> session
-//                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-//
-//        http
-//                .authorizeHttpRequests(authorize -> authorize
-//                        // GUEST
-//                        .requestMatchers("/api/member/**").permitAll()
-//                        // Swagger
-//                        .requestMatchers("/swagger-ui/**", "/api-docs/**").permitAll()
-//                        // USER
-//                        .requestMatchers("/api/user/member/**").authenticated()
-//                        // ADMIN
-//                        .requestMatchers("/api/admin/member/**").hasRole("ADMIN")
-//                        .anyRequest().authenticated()
-//                );
-//
-//        return http.build();
-//    }
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+                .csrf(AbstractHttpConfigurer::disable)
+                .httpBasic(AbstractHttpConfigurer::disable)
+                .formLogin(AbstractHttpConfigurer::disable)
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
+        http
+                .authorizeHttpRequests(authorize -> authorize
+                        // GUEST
+                        .requestMatchers("/api/member/**").permitAll()
+                        // Swagger
+                        .requestMatchers("/swagger-ui/**", "/api-docs/**").permitAll()
+                        // USER
+                        .requestMatchers("/api/user/member/**").authenticated()
+                        // ADMIN
+                        .requestMatchers("/api/admin/member/**").hasRole("ADMIN")
+                        .anyRequest().authenticated()
+                );
+
+        return http.build();
+    }
 }
