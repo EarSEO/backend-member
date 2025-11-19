@@ -9,14 +9,15 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.client.RestClient;
+
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class GoogleOAuthService {
 
-    private final WebClient webClient = WebClient.builder().build();
+    private final RestClient restClient;
 
     @Value("${oauth.google.client-id}")
     private String clientId;
@@ -44,24 +45,22 @@ public class GoogleOAuthService {
         params.add("redirect_uri", redirectUri);
         params.add("grant_type", "authorization_code");
 
-        return webClient.post()
+        return restClient.post()
                 .uri(tokenUri)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .bodyValue(params)
+                .body(params)
                 .retrieve()
-                .bodyToMono(GoogleTokenResponse.class)
-                .block();
+                .body(GoogleTokenResponse.class);
     }
 
     /**
      * 액세스 토큰으로 사용자 정보 조회
      */
     public GoogleUserInfoResponse getUserInfo(String accessToken) {
-        return webClient.get()
+        return restClient.get()
                 .uri(userInfoUri)
                 .header("Authorization", "Bearer " + accessToken)
                 .retrieve()
-                .bodyToMono(GoogleUserInfoResponse.class)
-                .block();
+                .body(GoogleUserInfoResponse.class);
     }
 }
