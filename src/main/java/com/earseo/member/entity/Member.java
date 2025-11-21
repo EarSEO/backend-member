@@ -17,7 +17,7 @@ public class Member extends BaseEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long memberId;
 
-    @Column(length = 100, unique = true)
+    @Column(length = 100, unique = true, nullable = false)
     private String email;
 
     @Enumerated(EnumType.STRING)
@@ -47,5 +47,14 @@ public class Member extends BaseEntity{
     @Column(length = 100)
     private String nationality;
 
+    public void updateProfile(String nickname, Gender gender, LocalDate birthdate, String nationality) {
+        this.nickname = nickname;
+        this.gender = gender;
+        this.birthdate = birthdate;
+        this.nationality = nationality;
+    }
 
+    public void updatePassword(String password) {
+        this.password = password;
+    }
 }
