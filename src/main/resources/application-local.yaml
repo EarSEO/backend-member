@@ -2,6 +2,9 @@ server:
   port: 8080
 
 spring:
+  config:
+    import:
+      - optional:file:/etc/secret/application-secret.yaml
   application:
     name: backend-member
   management:
@@ -13,18 +16,17 @@ spring:
       tags:
         application: ${spring.application.name}
   datasource:
-    driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:earseo}
+    driver-class-name: ${SPRING_DATASOURCE_DRIVER_CLASS_NAME:org.postgresql.Driver}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/earseo}
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:1234}
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:validate}
     properties:
       hibernate:
-        show_sql: true
-        format_sql: true
+        show_sql: false
         dialect: org.hibernate.dialect.PostgreSQLDialect
         default_schema: member
     open-in-view: false
@@ -36,22 +38,27 @@ oauth:
     redirect-uri: http://localhost:8080/api/member/oauth/google
     token-uri: https://oauth2.googleapis.com/token
     user-info-uri: https://www.googleapis.com/oauth2/v2/userinfo
-#  kafka:
-#    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
-#    consumer:
-#      group-id: ${KAFKA_CONSUMER_GROUP_ID:${spring.application.name}-group}
-#      auto-offset-reset: earliest
-#      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-#      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-#      properties:
-#        spring:
-#          json:
-#            trusted:
-#              packages: '*'
-#    producer:
-#      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-#      value-serializer: org.apache.kafka.common.serialization.StringSerializer
-#      acks: all
+kafka:
+  bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+  consumer:
+    group-id: ${SPRING_KAFKA_CONSUMER_GROUP_ID:${spring.application.name}-consumer-group}
+    auto-offset-reset: earliest
+    key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+  producer:
+    key-serializer: org.apache.kafka.common.serialization.StringSerializer
+    value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    acks: all
+  properties:
+    security.protocol: ${SPRING_KAFKA_PROPERTIES_SECURITY_PROTOCOL:PLAINTEXT}
+    sasl.mechanism: ${SPRING_KAFKA_PROPERTIES_SASL_MECHANISM:PLAIN}
+    sasl.jaas.config: ${SPRING_KAFKA_PROPERTIES_SASL_JAAS_CONFIG:}
+  data:
+    redis:
+      password: ${VALKEY_PASSWORD:}
+      sentinel:
+        master: ${SPRING_DATA_REDIS_SENTINEL_MASTER:valkey-master}
+        nodes: ${SPRING_DATA_REDIS_SENTINEL_NODES:localhost:26379}
 
 jwt:
   secret: ${JWT_SECRET}
@@ -71,7 +78,8 @@ springdoc:
 
 logging:
   level:
-    org.hibernate.SQL: debug
-    org.hibernate.type.descriptor.sql.BasicBinder: trace
-#    org.springframework.kafka: info
-#    org.apache.kafka: warn
+    org.hibernate.SQL: ${LOGGING_LEVEL_ORG_HIBERNATE_SQL:debug}
+
+
+member:
+  default-profile-image: ${DEFAULT_PROFILE_IMAGE:C:/uploads/profiles/default-profile.png}
