@@ -1,27 +1,25 @@
 spring:
-  config:
-    import:
-      - optional:file:/etc/secret/application-secret.yaml
   datasource:
-    driver-class-name: ${SPRING_DATASOURCE_DRIVER_CLASS_NAME:org.postgresql.Driver}
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/earseo}
-    username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:1234}
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/testdb
+    username: earseo
+    password: 1234
+
   jpa:
     hibernate:
-      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:validate}
+      ddl-auto: update
     properties:
       hibernate:
-        show_sql: false
+        show_sql: true
         format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
     open-in-view: false
   kafka:
     bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
     template:
-      observation-enabled: true
+      observation-enabled: false
     listener:
-      observation-enabled: true
+      observation-enabled: false
       ack-mode: manual
 
     consumer:
@@ -43,41 +41,34 @@ spring:
         spring.json.add.type.headers: false
     properties:
       security.protocol: ${SPRING_KAFKA_PROPERTIES_SECURITY_PROTOCOL:PLAINTEXT}
-      sasl.mechanism: ${SPRING_KAFKA_PROPERTIES_SASL_MECHANISM:PLAIN}
-      sasl.jaas.config: ${SPRING_KAFKA_PROPERTIES_SASL_JAAS_CONFIG:}
   data:
     redis:
-      password: ${VALKEY_PASSWORD}
-      sentinel:
-        master: ${SPRING_DATA_REDIS_SENTINEL_MASTER:valkey-master}
-        nodes: ${SPRING_DATA_REDIS_SENTINEL_NODES:localhost:26379}
       database: 3
+      host: localhost
+      port: 6379
 
-otel:
-  propagators:
-    - tracecontext
-    - b3
-    - baggage
+oauth:
+  google:
+    client-id: ${GOOGLE_CLIENT_ID:clientid}
+    client-secret: ${GOOGLE_CLIENT_SECRET:clientsecret}
+    redirect-uri: http://localhost:8080/api/member/oauth/google
+    token-uri: https://oauth2.googleapis.com/token
+    user-info-uri: https://www.googleapis.com/oauth2/v2/userinfo
+
+jwt:
+  secret: ${JWT_SECRET:jwtsecretjwtsecretjwtsecretjwtsecretjwtsecretjwtsecretjwtsecretjwtsecretjwtsecretjwtsecretjwtsecret}
+  accessTokenExpiration: ${JWT_ACCESS_TOKEN_EXPIRATION:10000}
+  refreshTokenExpiration: ${JWT_REFRESH_TOKEN_EXPIRATION:10000}
+
 management:
-  otlp:
-    tracing:
-      endpoint: http://${NODE_IP:localhost}:4317
-      transport: grpc
   endpoints:
     web:
       exposure:
         include: prometheus,health,info
-  endpoint:
-    health:
-      probes:
-        enabled: true
   metrics:
-    tags:
-      application: ${spring.application.name}
+    enabled: false
   tracing:
-    sampling:
-      probability: 1.0
-    enabled: true
+    enabled: false
 
 logging:
   level:

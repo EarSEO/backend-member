@@ -1,3 +1,16 @@
 spring:
   profiles:
     default: local
+  application:
+    name: backend-member
+
+springdoc:
+  api-docs:
+    enabled: true
+    path: /api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    display-request-duration: true
+    operations-sorter: method
+    tags-sorter: alpha
