@@ -37,9 +37,7 @@ public class AuthService {
 
     @Transactional
     public SignUpResponseDto signup(SignUpRequestDto request) {
-        if (memberRepository.existsByEmail(request.email())) {
-            throw new BaseException(MemberErrorCode.DUPLICATE_EMAIL);
-        }
+        validateDuplicateMember(request.email(), Provider.LOCAL);
 
         if (memberRepository.existsByNickname(request.nickname())) {
             throw new BaseException(MemberErrorCode.DUPLICATE_NICKNAME);
@@ -135,9 +133,7 @@ public class AuthService {
     @Transactional
     public LoginResponseDto completeSocialSignUp(SocialSignUpRequestDto request) {
         // 이미 가입된 회원인지 확인
-        if (memberRepository.findByEmailAndProvider(request.email(), request.provider()).isPresent()) {
-            throw new BaseException(MemberErrorCode.DUPLICATE_EMAIL);
-        }
+        validateDuplicateMember(request.email(), request.provider());
 
         // 닉네임 중복 확인
         if (memberRepository.existsByNickname(request.nickname())) {
@@ -175,4 +171,17 @@ public class AuthService {
     }
 
     public void logout(){}
+
+    private void validateDuplicateMember(String email, Provider provider) {
+        // 같은 이메일, 같은 Provider 확인
+        if (memberRepository.findByEmailAndProvider(email, provider).isPresent()) {
+            throw new BaseException(MemberErrorCode.DUPLICATE_EMAIL);
+        }
+
+        // 같은 이메일로 다른 Provider 가입 여부 확인
+        Optional<Member> existingMember = memberRepository.findByEmail(email);
+        if (existingMember.isPresent()) {
+            throw new BaseException(MemberErrorCode.ALREADY_REGISTERED_WITH_DIFFERENT_PROVIDER);
+        }
+    }
 }
