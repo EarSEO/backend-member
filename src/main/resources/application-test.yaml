@@ -55,11 +55,6 @@ oauth:
     token-uri: https://oauth2.googleapis.com/token
     user-info-uri: https://www.googleapis.com/oauth2/v2/userinfo
 
-jwt:
-  secret: ${JWT_SECRET:jwtsecretjwtsecretjwtsecretjwtsecretjwtsecretjwtsecretjwtsecretjwtsecretjwtsecretjwtsecretjwtsecret}
-  accessTokenExpiration: ${JWT_ACCESS_TOKEN_EXPIRATION:10000}
-  refreshTokenExpiration: ${JWT_REFRESH_TOKEN_EXPIRATION:10000}
-
 management:
   endpoints:
     web:
@@ -73,3 +68,6 @@ management:
 logging:
   level:
     org.hibernate.SQL: ${LOGGING_LEVEL_ORG_HIBERNATE_SQL:debug}
+
+member:
+  default-profile-image: ${DEFAULT_PROFILE_IMAGE:}

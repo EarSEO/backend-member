@@ -2,22 +2,32 @@ server:
   port: 8080
 
 spring:
+  config:
+    import:
+      - optional:file:/etc/secret/application-secret.yaml
   datasource:
-    driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:earseo}
+    driver-class-name: ${SPRING_DATASOURCE_DRIVER_CLASS_NAME:org.postgresql.Driver}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/earseo}
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:1234}
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:validate}
     properties:
       hibernate:
-        show_sql: true
         format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
         default_schema: member
     open-in-view: false
+
+oauth:
+  google:
+    client-id: ${GOOGLE_CLIENT_ID}
+    client-secret: ${GOOGLE_CLIENT_SECRET}
+    redirect-uri: http://localhost:8080/api/member/oauth/google
+    token-uri: https://oauth2.googleapis.com/token
+    user-info-uri: https://www.googleapis.com/oauth2/v2/userinfo
   kafka:
     bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:${KAFKA_IP}:19092}
     template:
@@ -53,19 +63,6 @@ spring:
         nodes: ${SPRING_DATA_REDIS_SENTINEL_NODES:localhost:26379,localhost:26380,localhost:26381}
       database: 3
 
-oauth:
-  google:
-    client-id: ${GOOGLE_CLIENT_ID}
-    client-secret: ${GOOGLE_CLIENT_SECRET}
-    redirect-uri: http://localhost:8080/api/member/oauth/google
-    token-uri: https://oauth2.googleapis.com/token
-    user-info-uri: https://www.googleapis.com/oauth2/v2/userinfo
-
-jwt:
-  secret: ${JWT_SECRET}
-  accessTokenExpiration: ${JWT_ACCESS_TOKEN_EXPIRATION}
-  refreshTokenExpiration: ${JWT_REFRESH_TOKEN_EXPIRATION}
-
 management:
   endpoints:
     web:
@@ -83,7 +80,8 @@ management:
 
 logging:
   level:
-    org.hibernate.SQL: debug
+    org.hibernate.SQL: ${LOGGING_LEVEL_ORG_HIBERNATE_SQL:debug}
     org.hibernate.type.descriptor.sql.BasicBinder: trace
-#    org.springframework.kafka: info
-#    org.apache.kafka: warn
+
+member:
+  default-profile-image: ${DEFAULT_PROFILE_IMAGE:C:/uploads/profiles/default-profile.png}

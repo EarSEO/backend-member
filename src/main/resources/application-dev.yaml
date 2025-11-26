@@ -82,3 +82,6 @@ management:
 logging:
   level:
     org.hibernate.SQL: ${LOGGING_LEVEL_ORG_HIBERNATE_SQL:debug}
+
+member:
+  default-profile-image: ${DEFAULT_PROFILE_IMAGE:}
