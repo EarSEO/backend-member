@@ -18,7 +18,6 @@ spring:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
-        default_schema: member
     open-in-view: false
 
 oauth:
