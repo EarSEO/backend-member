@@ -1,3 +1,21 @@
 spring:
   profiles:
     default: local
+  application:
+    name: backend-member
+
+springdoc:
+  api-docs:
+    enabled: true
+    path: /api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    display-request-duration: true
+    operations-sorter: method
+    tags-sorter: alpha
+
+jwt:
+  secret: ${JWT_SECRET:jwtsecretjwtsecretjwtsecretjwtsecretjwtsecretjwtsecretjwtsecretjwtsecretjwtsecretjwtsecretjwtsecret}
+  accessTokenExpiration: ${JWT_ACCESS_TOKEN_EXPIRATION:10000}
+  refreshTokenExpiration: ${JWT_REFRESH_TOKEN_EXPIRATION:10000}

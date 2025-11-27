@@ -44,6 +44,13 @@ dependencies {
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.5'
     implementation 'com.fasterxml.jackson.core:jackson-databind'
+
+	implementation 'io.micrometer:micrometer-tracing-bridge-otel' // 트레이싱
+	implementation 'io.opentelemetry:opentelemetry-exporter-otlp' // otel exporter
+	implementation 'net.ttddyy.observation:datasource-micrometer-spring-boot:1.1.2' // JDBC 트레이싱
+
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+	implementation 'org.springframework.kafka:spring-kafka'
 }
 
 tasks.named('test') {
