@@ -59,4 +59,45 @@ public class JwtUtil {
                 .signWith(secretKey)
                 .compact();
     }
+    /**
+     * 토큰에서 Claims 추출
+     */
+    public Claims parseToken(String token) {
+        return Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+    }
+
+    /**
+     * 토큰에서 memberId 추출
+     */
+    public Long getMemberIdFromToken(String token) {
+        Claims claims = parseToken(token);
+        return Long.parseLong(claims.getSubject());
+    }
+
+    /**
+     * 토큰 만료시간 추출 (Redis TTL 설정용)
+     */
+    public long getExpiration(String token) {
+        Claims claims = parseToken(token);
+        return claims.getExpiration().getTime();
+    }
+
+    /**
+     * 토큰 남은 유효시간 계산 (밀리초)
+     */
+    public long getRemainingTime(String token) {
+        long expiration = getExpiration(token);
+        return expiration - System.currentTimeMillis();
+    }
+
+    /**
+     * Refresh Token 만료시간 반환 (밀리초)
+     */
+    public long getRefreshTokenExpiration() {
+        return refreshTokenExpiration;
+    }
 }

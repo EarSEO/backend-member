@@ -19,6 +19,25 @@ spring:
         format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
     open-in-view: false
+  data:
+    redis:
+      password: ${VALKEY_PASSWORD:valkeypass}
+      sentinel:
+        master: ${SPRING_DATA_REDIS_SENTINEL_MASTER:valkey-master}
+        nodes: ${SPRING_DATA_REDIS_SENTINEL_NODES:localhost:26379,localhost:26380,localhost:26381}
+      database: 3
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${GMAIL_USERNAME}
+    password: ${GMAIL_APP_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
 
 oauth:
   google:
@@ -54,13 +73,6 @@ oauth:
         spring.json.add.type.headers: false
     properties:
       security.protocol: ${SPRING_KAFKA_PROPERTIES_SECURITY_PROTOCOL:PLAINTEXT}
-  data:
-    redis:
-      password: ${VALKEY_PASSWORD:valkeypass}
-      sentinel:
-        master: ${SPRING_DATA_REDIS_SENTINEL_MASTER:valkey-master}
-        nodes: ${SPRING_DATA_REDIS_SENTINEL_NODES:localhost:26379,localhost:26380,localhost:26381}
-      database: 3
 
 management:
   endpoints:

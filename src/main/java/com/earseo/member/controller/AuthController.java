@@ -1,12 +1,8 @@
 package com.earseo.member.controller;
 
 import com.earseo.member.common.BaseResponse;
-import com.earseo.member.dto.request.SocialSignUpRequestDto;
-import com.earseo.member.dto.request.LoginRequestDto;
-import com.earseo.member.dto.request.SignUpRequestDto;
-import com.earseo.member.dto.response.SocialLoginResponseDto;
-import com.earseo.member.dto.response.LoginResponseDto;
-import com.earseo.member.dto.response.SignUpResponseDto;
+import com.earseo.member.dto.request.*;
+import com.earseo.member.dto.response.*;
 import com.earseo.member.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -51,10 +47,39 @@ public class AuthController {
         return ResponseEntity.ok(BaseResponse.ok(response));
     }
 
-    @Operation(summary = "로그아웃", description = "로그아웃")
-    @PostMapping("/logout")
-    public ResponseEntity<BaseResponse<Void>> logout() {
-        authService.logout();
+    @Operation(summary = "닉네임 중복 확인", description = "닉네임 사용 가능 여부 확인")
+    @GetMapping("/nickname/check")
+    public ResponseEntity<BaseResponse<NicknameCheckResponseDto>> checkNickname(
+            @RequestParam("nickname") String nickname
+    ) {
+        NicknameCheckResponseDto response = authService.checkNickname(nickname);
+        return ResponseEntity.ok(BaseResponse.ok(response));
+    }
+
+    @Operation(summary = "토큰 재발급", description = "Refresh Token으로 새 Access Token 발급")
+    @PostMapping("/reissue")
+    public ResponseEntity<BaseResponse<TokenRefreshResponseDto>> reissue(
+            @Valid @RequestBody TokenRefreshRequestDto request
+    ) {
+        TokenRefreshResponseDto response = authService.reissue(request);
+        return ResponseEntity.ok(BaseResponse.ok(response));
+    }
+
+    @Operation(summary = "이메일 인증코드 발송", description = "회원가입용 이메일 인증코드 발송")
+    @PostMapping("/email/send")
+    public ResponseEntity<BaseResponse<Void>> sendVerificationCode(
+            @Valid @RequestBody EmailVerificationRequestDto request
+    ) {
+        authService.sendVerificationCode(request);
+        return ResponseEntity.ok(BaseResponse.ok(null));
+    }
+
+    @Operation(summary = "이메일 인증코드 검증", description = "이메일 인증코드 확인")
+    @PostMapping("/email/verify")
+    public ResponseEntity<BaseResponse<Void>> verifyEmail(
+            @Valid @RequestBody EmailVerificationConfirmDto request
+    ) {
+        authService.verifyEmail(request);
         return ResponseEntity.ok(BaseResponse.ok(null));
     }
 }
