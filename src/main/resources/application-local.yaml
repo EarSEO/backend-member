@@ -26,18 +26,7 @@ spring:
         master: ${SPRING_DATA_REDIS_SENTINEL_MASTER:valkey-master}
         nodes: ${SPRING_DATA_REDIS_SENTINEL_NODES:localhost:26379,localhost:26380,localhost:26381}
       database: 3
-  mail:
-    host: smtp.gmail.com
-    port: 587
-    username: ${GMAIL_USERNAME}
-    password: ${GMAIL_APP_PASSWORD}
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
-            required: true
+
 
 oauth:
   google:
