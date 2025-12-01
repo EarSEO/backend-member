@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +20,7 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+    private final S3Service s3Service;
 
     @Transactional(readOnly = true)
     public ProfileResponseDto getProfile(Long memberId) {
@@ -89,5 +91,22 @@ public class MemberService {
                 .orElseThrow(() -> new BaseException(MemberErrorCode.MEMBER_NOT_FOUND));
 
         memberRepository.delete(member);
+    }
+
+    @Transactional
+    public String updateProfileImage(Long memberId, MultipartFile file) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
+
+        // 기존 이미지 삭제
+        if (member.getProfileImage() != null) {
+            s3Service.deleteFile(member.getProfileImage());
+        }
+
+        // 새 이미지 업로드
+        String imageUrl = s3Service.uploadFile(file, "member");
+        member.updateProfileImage(imageUrl);
+
+        return imageUrl;
     }
 }
