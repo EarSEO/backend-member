@@ -9,7 +9,7 @@ spring:
     driver-class-name: ${SPRING_DATASOURCE_DRIVER_CLASS_NAME:org.postgresql.Driver}
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/earseo}
     username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:1234}
+    password: ${DB_PASSWORD:postgres}
 
   jpa:
     hibernate:
@@ -85,3 +85,14 @@ logging:
 
 member:
   default-profile-image: ${DEFAULT_PROFILE_IMAGE:C:/uploads/profiles/default-profile.png}
+cloud:
+  aws:
+    credentials:
+      access-key: ${AWS_CREDENTAIL_ACCESS_KEY:acess_key}
+      secret-key: ${AWS_CREDENTAIL_SECRET_KEY:secret_key}
+    region:
+      static: ap-northeast-2
+    s3:
+      bucket: ${AWS_S#_BUCKET:example-bucket}
+    cloudfront:
+      domain: ${AWS_CLOUDFRONT_DOMAIN:cdn.example.com}

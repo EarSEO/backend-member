@@ -11,6 +11,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/user/member")
@@ -35,6 +38,17 @@ public class MemberController {
             @Valid @RequestBody ProfileUpdateRequestDto request) {
         ProfileResponseDto response = memberService.updateProfile(memberId, request);
         return ResponseEntity.ok(BaseResponse.ok(response));
+    }
+
+    @Operation(summary = "프로필 사진 수정", description = "회원 프로필 사진 업로드")
+    @PatchMapping("/profile-image")
+    public ResponseEntity<BaseResponse<Map<String, String>>> updateProfileImage(
+            @RequestHeader("X-USER-ID") Long memberId,
+            @RequestPart("file") MultipartFile file) {
+
+        String imageUrl = memberService.updateProfileImage(memberId, file);
+
+        return ResponseEntity.ok(BaseResponse.ok(Map.of("profileImageUrl", imageUrl)));
     }
 
     @Operation(summary = "비밀번호 변경", description = "현재 비밀번호 확인 후 새 비밀번호로 변경")
