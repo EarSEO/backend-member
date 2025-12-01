@@ -43,7 +43,7 @@ public class SecurityConfig {
                         // ADMIN
                         .requestMatchers("/api/admin/member/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
-                );
+                ).formLogin(form -> form.disable());;
 
         return http.build();
     }
