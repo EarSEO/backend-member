@@ -24,6 +24,8 @@ public class S3Service {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
+    private static final String CDN_DOMAIN = "https://cdn.earseo.click/";
+
     public String uploadFile(MultipartFile file, String directory) {
         if (file.isEmpty()) {
             throw new IllegalArgumentException("업로드할 파일이 없습니다.");
@@ -45,7 +47,7 @@ public class S3Service {
         }
 
 //        return amazonS3.getUrl(bucket, savedFilename).toString();
-        return "https://cdn.earseo.click/" + savedFilename;
+        return CDN_DOMAIN + savedFilename;
     }
 
     public void deleteFile(String fileUrl) {
@@ -54,11 +56,39 @@ public class S3Service {
         }
 
         try {
-            String key = fileUrl.substring(fileUrl.indexOf(bucket) + bucket.length() + 1);
+            String key = extractKeyFromUrl(fileUrl);
+            if (key == null || key.isEmpty()) {
+                log.warn("알 수 없는 파일 URL 형식입니다: {}", fileUrl);
+                return;
+            }
             amazonS3.deleteObject(new DeleteObjectRequest(bucket, key));
             log.info("S3 파일 삭제 완료: {}", key);
         } catch (Exception e) {
-            log.error("S3 파일 삭제 실패: {}", e.getMessage());
+            log.error("S3 파일 삭제 실패: {}", e.getMessage(), e);
         }
+    }
+
+    private String extractKeyFromUrl(String fileUrl) {
+        if(fileUrl.startsWith(CDN_DOMAIN)) {
+            return fileUrl.substring(CDN_DOMAIN.length());
+        }
+
+        if (fileUrl.contains(bucket)) {
+            int bucketIndex = fileUrl.indexOf(bucket);
+            if (bucketIndex == -1) {
+                return null;
+            }
+            int keyStart = bucketIndex + bucket.length() + 1;
+            if (keyStart >= fileUrl.length()) {
+                return null;
+            }
+            return fileUrl.substring(keyStart);
+        }
+
+        if (!fileUrl.startsWith("http://") && !fileUrl.startsWith("https://")) {
+            return fileUrl;
+        }
+
+        return null;
     }
 }
