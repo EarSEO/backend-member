@@ -1,7 +1,6 @@
 package com.earseo.member.service;
 
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
@@ -24,7 +23,8 @@ public class S3Service {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
-    private static final String CDN_DOMAIN = "https://cdn.earseo.click/";
+    @Value("${cloud.aws.cloudfront.domain}")
+    private String cdnDomain;
 
     public String uploadFile(MultipartFile file, String directory) {
         if (file.isEmpty()) {
@@ -46,8 +46,7 @@ public class S3Service {
             throw new RuntimeException("파일 업로드에 실패했습니다.");
         }
 
-//        return amazonS3.getUrl(bucket, savedFilename).toString();
-        return CDN_DOMAIN + savedFilename;
+        return cdnDomain + savedFilename;
     }
 
     public void deleteFile(String fileUrl) {
@@ -69,8 +68,8 @@ public class S3Service {
     }
 
     private String extractKeyFromUrl(String fileUrl) {
-        if(fileUrl.startsWith(CDN_DOMAIN)) {
-            return fileUrl.substring(CDN_DOMAIN.length());
+        if(fileUrl.startsWith(cdnDomain)) {
+            return fileUrl.substring(cdnDomain.length());
         }
 
         if (fileUrl.contains(bucket)) {
