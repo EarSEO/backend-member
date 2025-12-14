@@ -1,5 +1,5 @@
 server:
-  port: 8081
+  port: 8080
 
 spring:
   config:
@@ -7,7 +7,7 @@ spring:
       - optional:file:/etc/secret/application-secret.yaml
   datasource:
     driver-class-name: ${SPRING_DATASOURCE_DRIVER_CLASS_NAME:org.postgresql.Driver}
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:15432/member}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/earseo}
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:postgres}
 
@@ -32,7 +32,7 @@ oauth:
   google:
     client-id: ${GOOGLE_CLIENT_ID}
     client-secret: ${GOOGLE_CLIENT_SECRET}
-    redirect-uri: http://localhost:8081/api/member/oauth/google
+    redirect-uri: http://localhost:8080/api/member/oauth/google
     token-uri: https://oauth2.googleapis.com/token
     user-info-uri: https://www.googleapis.com/oauth2/v2/userinfo
   kafka:
