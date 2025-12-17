@@ -263,7 +263,7 @@ public class AuthService {
     /**
      * 이메일 인증코드 발송
      */
-    public void sendVerificationCode(EmailVerificationRequestDto request) {
+    public void sendSignupVerificationCode(EmailVerificationRequestDto request) {
         // 이미 가입된 이메일인지 확인
         if (memberRepository.findByEmailAndProvider(request.email(), Provider.LOCAL).isPresent()) {
             throw new BaseException(MemberErrorCode.DUPLICATE_EMAIL);
@@ -271,6 +271,23 @@ public class AuthService {
 
         // 다른 Provider로 가입된 이메일인지 확인
         if (memberRepository.findByEmail(request.email()).isPresent()) {
+            throw new BaseException(MemberErrorCode.ALREADY_REGISTERED_WITH_DIFFERENT_PROVIDER);
+        }
+
+        String code = emailVerificationService.generateCode();
+        emailVerificationService.saveCode(request.email(), code);
+        emailService.sendVerificationCode(request.email(), code);
+    }
+
+
+    public void sendPasswordResetCode(EmailVerificationRequestDto request) {
+        // 이미 가입된 이메일인지 확인
+        if (!memberRepository.findByEmailAndProvider(request.email(), Provider.LOCAL).isPresent()) {
+            throw new BaseException(MemberErrorCode.MEMBER_NOT_FOUND);
+        }
+
+        // 다른 Provider로 가입된 이메일인지 확인
+        if (!memberRepository.findByEmail(request.email()).isPresent()) {
             throw new BaseException(MemberErrorCode.ALREADY_REGISTERED_WITH_DIFFERENT_PROVIDER);
         }
 
@@ -296,5 +313,20 @@ public class AuthService {
 
         // 인증코드 삭제
         emailVerificationService.deleteCode(request.email());
+    }
+
+    @Transactional
+    public void resetPassword(PasswordResetRequestDto request) {
+        if (!emailVerificationService.isVerified(request.email())) {
+            throw new BaseException(MemberErrorCode.EMAIL_NOT_VERIFIED);
+        }
+
+        Member member = memberRepository.findByEmailAndProvider(request.email(), Provider.LOCAL)
+                .orElseThrow(() -> new BaseException(MemberErrorCode.MEMBER_NOT_FOUND));
+
+        member.updatePassword(passwordEncoder.encode(request.newPassword()));
+        memberRepository.save(member);
+
+        emailVerificationService.deleteVerified(request.email());
     }
 }

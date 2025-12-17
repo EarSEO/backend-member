@@ -66,11 +66,20 @@ public class AuthController {
     }
 
     @Operation(summary = "이메일 인증코드 발송", description = "회원가입용 이메일 인증코드 발송")
-    @PostMapping("/email/send")
-    public ResponseEntity<BaseResponse<Void>> sendVerificationCode(
+    @PostMapping("/email/signup/send")
+    public ResponseEntity<BaseResponse<Void>> sendSignupVerificationCode(
             @Valid @RequestBody EmailVerificationRequestDto request
     ) {
-        authService.sendVerificationCode(request);
+        authService.sendSignupVerificationCode(request);
+        return ResponseEntity.ok(BaseResponse.ok(null));
+    }
+
+    @Operation(summary = "이메일 인증코드 발송", description = "비밀번호 찾기용 이메일 인증코드 발송")
+    @PostMapping("/email/password/send")
+    public ResponseEntity<BaseResponse<Void>> sendPasswordResetCode(
+            @Valid @RequestBody EmailVerificationRequestDto request
+    ) {
+        authService.sendPasswordResetCode(request);
         return ResponseEntity.ok(BaseResponse.ok(null));
     }
 
@@ -80,6 +89,14 @@ public class AuthController {
             @Valid @RequestBody EmailVerificationConfirmDto request
     ) {
         authService.verifyEmail(request);
+        return ResponseEntity.ok(BaseResponse.ok(null));
+    }
+
+    @Operation(summary = "비밀번호 재설정", description = "이메일 인증 완료 후 비밀번호 재설정")
+    @PostMapping("/reset-password")
+    public ResponseEntity<BaseResponse<Void>> resetPassword(
+            @Valid @RequestBody PasswordResetRequestDto request) {
+        authService.resetPassword(request);
         return ResponseEntity.ok(BaseResponse.ok(null));
     }
 }
