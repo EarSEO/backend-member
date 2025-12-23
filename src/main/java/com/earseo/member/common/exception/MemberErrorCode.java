@@ -20,7 +20,8 @@ public enum MemberErrorCode implements ErrorCodeInterface {
     EMAIL_SEND_FAILED("MEM010", "이메일 발송에 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
     INVALID_VERIFICATION_CODE("MEM011", "유효하지 않은 인증코드입니다.", HttpStatus.BAD_REQUEST),
     VERIFICATION_CODE_EXPIRED("MEM012", "인증코드가 만료되었습니다.", HttpStatus.BAD_REQUEST),
-    EMAIL_NOT_VERIFIED("MEM013", "이메일 인증이 완료되지 않았습니다.", HttpStatus.BAD_REQUEST);
+    EMAIL_NOT_VERIFIED("MEM013", "이메일 인증이 완료되지 않았습니다.", HttpStatus.BAD_REQUEST),
+    SAME_AS_CURRENT_PASSWORD( "MEM014", "기존 비밀번호와 동일한 비밀번호는 사용할 수 없습니다.", HttpStatus.BAD_REQUEST);
 
     private final String status;
     private final String message;

@@ -324,6 +324,10 @@ public class AuthService {
         Member member = memberRepository.findByEmailAndProvider(request.email(), Provider.LOCAL)
                 .orElseThrow(() -> new BaseException(MemberErrorCode.MEMBER_NOT_FOUND));
 
+        if (passwordEncoder.matches(request.newPassword(), member.getPassword())) {
+            throw new BaseException(MemberErrorCode.SAME_AS_CURRENT_PASSWORD);
+        }
+
         member.updatePassword(passwordEncoder.encode(request.newPassword()));
         memberRepository.save(member);
 
