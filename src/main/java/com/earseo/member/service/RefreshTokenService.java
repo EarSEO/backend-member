@@ -1,13 +1,11 @@
 package com.earseo.member.service;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.TimeUnit;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class RefreshTokenService {
@@ -22,7 +20,6 @@ public class RefreshTokenService {
     public void saveRefreshToken(Long memberId, String refreshToken, long expirationMs) {
         String key = REFRESH_TOKEN_PREFIX + memberId;
         stringTemplate.opsForValue().set(key, refreshToken, expirationMs, TimeUnit.MILLISECONDS);
-        log.info("Refresh Token 저장 완료 - memberId: {}", memberId);
     }
 
     /**
@@ -46,12 +43,7 @@ public class RefreshTokenService {
      */
     public void deleteRefreshToken(Long memberId) {
         String key = REFRESH_TOKEN_PREFIX + memberId;
-        Boolean deleted = stringTemplate.delete(key);
-        if (Boolean.TRUE.equals(deleted)) {
-            log.info("Refresh Token 삭제 완료 - memberId: {}", memberId);
-        } else {
-            log.warn("Refresh Token 삭제 실패 또는 존재하지 않음 - memberId: {}", memberId);
-        }
+        stringTemplate.delete(key);
     }
 
     /**

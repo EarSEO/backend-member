@@ -1,14 +1,11 @@
 package com.earseo.member.service;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-
 import java.security.SecureRandom;
 import java.util.concurrent.TimeUnit;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class EmailVerificationService {
@@ -35,28 +32,14 @@ public class EmailVerificationService {
     public void saveCode(String email, String code) {
         String key = VERIFICATION_PREFIX + email;
         stringTemplate.opsForValue().set(key, code, EXPIRATION_MINUTES, TimeUnit.MINUTES);
-        log.info("인증코드 저장 완료 - email: {}", email);
     }
 
     /**
      * 인증코드 검증
      */
     public boolean verifyCode(String email, String code) {
-        String key = VERIFICATION_PREFIX + email;
-        String storedCode = stringTemplate.opsForValue().get(key);
-
-        if (storedCode == null) {
-            log.warn("인증코드 없음 또는 만료 - email: {}", email);
-            return false;
-        }
-
-        if (storedCode.equals(code)) {
-            log.info("인증코드 검증 성공 - email: {}", email);
-            return true;
-        }
-
-        log.warn("인증코드 불일치 - email: {}", email);
-        return false;
+        String storedCode = stringTemplate.opsForValue().get(VERIFICATION_PREFIX + email);
+        return storedCode != null && storedCode.equals(code);
     }
 
     /**
@@ -65,7 +48,6 @@ public class EmailVerificationService {
     public void deleteCode(String email) {
         String key = VERIFICATION_PREFIX + email;
         stringTemplate.delete(key);
-        log.info("인증코드 삭제 완료 - email: {}", email);
     }
 
     /**
@@ -82,7 +64,6 @@ public class EmailVerificationService {
     public void saveVerified(String email) {
         String key = VERIFIED_PREFIX + email;
         stringTemplate.opsForValue().set(key, "true", VERIFIED_EXPIRATION_MINUTES, TimeUnit.MINUTES);
-        log.info("이메일 인증 완료 상태 저장 - email: {}", email);
     }
 
     /**
@@ -99,6 +80,5 @@ public class EmailVerificationService {
     public void deleteVerified(String email) {
         String key = VERIFIED_PREFIX + email;
         stringTemplate.delete(key);
-        log.info("이메일 인증 완료 상태 삭제 - email: {}", email);
     }
 }
