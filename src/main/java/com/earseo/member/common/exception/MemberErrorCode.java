@@ -21,7 +21,13 @@ public enum MemberErrorCode implements ErrorCodeInterface {
     INVALID_VERIFICATION_CODE("MEM011", "유효하지 않은 인증코드입니다.", HttpStatus.BAD_REQUEST),
     VERIFICATION_CODE_EXPIRED("MEM012", "인증코드가 만료되었습니다.", HttpStatus.BAD_REQUEST),
     EMAIL_NOT_VERIFIED("MEM013", "이메일 인증이 완료되지 않았습니다.", HttpStatus.BAD_REQUEST),
-    SAME_AS_CURRENT_PASSWORD( "MEM014", "기존 비밀번호와 동일한 비밀번호는 사용할 수 없습니다.", HttpStatus.BAD_REQUEST);
+    SAME_AS_CURRENT_PASSWORD( "MEM014", "기존 비밀번호와 동일한 비밀번호는 사용할 수 없습니다.", HttpStatus.BAD_REQUEST),
+
+    // Apple 로그인 관련
+    APPLE_TOKEN_INVALID("MEM015", "유효하지 않은 Apple 토큰입니다.", HttpStatus.UNAUTHORIZED),
+    APPLE_PUBLIC_KEY_NOT_FOUND("MEM016", "Apple 공개키를 찾을 수 없습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
+    APPLE_TOKEN_EXPIRED("MEM017", "만료된 Apple 토큰입니다.", HttpStatus.UNAUTHORIZED),
+    APPLE_SERVER_ERROR("MEM018", "Apple 서버 연동 중 오류가 발생했습니다.", HttpStatus.SERVICE_UNAVAILABLE);
 
     private final String status;
     private final String message;
