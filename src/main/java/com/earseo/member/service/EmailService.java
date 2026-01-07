@@ -5,13 +5,11 @@ import com.earseo.member.common.exception.MemberErrorCode;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class EmailService {
@@ -32,9 +30,7 @@ public class EmailService {
             helper.setText(buildEmailContent(code), true);
 
             mailSender.send(message);
-            log.info("인증코드 이메일 발송 완료 - to: {}", to);
         } catch (MessagingException e) {
-            log.error("이메일 발송 실패 - to: {}", to, e);
             throw new BaseException(MemberErrorCode.EMAIL_SEND_FAILED);
         }
     }

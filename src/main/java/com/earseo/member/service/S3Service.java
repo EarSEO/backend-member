@@ -42,7 +42,6 @@ public class S3Service {
         try {
             amazonS3.putObject(new PutObjectRequest(bucket, savedFilename, file.getInputStream(), metadata));
         } catch (IOException e) {
-            log.error("S3 파일 업로드 실패: {}", e.getMessage());
             throw new RuntimeException("파일 업로드에 실패했습니다.");
         }
 
@@ -57,11 +56,9 @@ public class S3Service {
         try {
             String key = extractKeyFromUrl(fileUrl);
             if (key == null || key.isEmpty()) {
-                log.warn("알 수 없는 파일 URL 형식입니다: {}", fileUrl);
                 return;
             }
             amazonS3.deleteObject(new DeleteObjectRequest(bucket, key));
-            log.info("S3 파일 삭제 완료: {}", key);
         } catch (Exception e) {
             log.error("S3 파일 삭제 실패: {}", e.getMessage(), e);
         }

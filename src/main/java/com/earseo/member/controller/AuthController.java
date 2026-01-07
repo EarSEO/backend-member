@@ -4,6 +4,7 @@ import com.earseo.member.common.BaseResponse;
 import com.earseo.member.dto.request.*;
 import com.earseo.member.dto.response.*;
 import com.earseo.member.service.AuthService;
+import com.earseo.member.service.oauth.AppleLoginService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthService authService;
+    private final AppleLoginService appleLoginService;
 
     @Operation(summary = "회원가입", description = "이메일/비밀번호 기반 회원가입")
     @PostMapping("/signup")
@@ -98,5 +100,13 @@ public class AuthController {
             @Valid @RequestBody PasswordResetRequestDto request) {
         authService.resetPassword(request);
         return ResponseEntity.ok(BaseResponse.ok(null));
+    }
+
+    @Operation(summary = "애플 로그인", description = "Apple identityToken으로 로그인/회원가입 처리")
+    @PostMapping("/oauth/apple")
+    public ResponseEntity<BaseResponse<LoginResponseDto>> appleLogin(
+            @RequestBody AppleLoginRequestDto request) {
+        LoginResponseDto response = appleLoginService.login(request);
+        return ResponseEntity.ok(BaseResponse.ok(response));
     }
 }

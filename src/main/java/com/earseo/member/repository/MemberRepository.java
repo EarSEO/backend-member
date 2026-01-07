@@ -18,4 +18,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     boolean existsByNickname(String nickname);
 
     Optional<Member> findByEmailAndProvider(String email, Provider provider);
+
+    // 애플 소셜 로그인용 - providerId로 조회
+    Optional<Member> findByProviderAndProviderId(Provider provider, String providerId);
 }
