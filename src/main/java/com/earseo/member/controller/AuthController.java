@@ -40,7 +40,6 @@ public class AuthController {
         return ResponseEntity.ok(BaseResponse.ok(response));
     }
 
-
     @Operation(summary = "소셜 로그인 추가 정보 입력", description = "신규 소셜 회원 추가 정보 입력 및 회원가입 완료")
     @PostMapping("/oauth/additional-info")
     public ResponseEntity<BaseResponse<LoginResponseDto>> completeSocialSignUp(
@@ -104,9 +103,9 @@ public class AuthController {
 
     @Operation(summary = "애플 로그인", description = "Apple identityToken으로 로그인/회원가입 처리")
     @PostMapping("/oauth/apple")
-    public ResponseEntity<BaseResponse<LoginResponseDto>> appleLogin(
+    public ResponseEntity<BaseResponse<SocialLoginResponseDto>> appleLogin(
             @RequestBody AppleLoginRequestDto request) {
-        LoginResponseDto response = appleLoginService.login(request);
+        SocialLoginResponseDto response = appleLoginService.login(request);
         return ResponseEntity.ok(BaseResponse.ok(response));
     }
 }
