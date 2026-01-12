@@ -143,7 +143,12 @@ public class AuthService {
             return SocialLoginResponseDto.existing(loginResponse);
         } else {
             // 신규 회원 - 추가 정보 입력 필요
-            return SocialLoginResponseDto.newMember(googleUser.email());
+            return SocialLoginResponseDto.newMember(
+                    googleUser.email(),
+                    "GOOGLE",
+                    googleUser.id(),  // Google의 providerId (sub 클레임)
+                    googleUser.name()  // 또는 null
+            );
         }
     }
 
@@ -161,6 +166,7 @@ public class AuthService {
         Member member = Member.builder()
                 .email(request.email())
                 .provider(request.provider())
+                .providerId(request.providerId())
                 .nickname(request.nickname())
                 .gender(request.gender())
                 .birthdate(request.birthdate())
