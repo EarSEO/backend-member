@@ -9,7 +9,7 @@ public record SocialLoginResponseDto(
         String email,
         String provider,
         String nickname,
-        String providerId,
+        String tempToken,
 
         // 기존 회원인 경우에만 값이 있음
         String accessToken,
@@ -31,12 +31,12 @@ public record SocialLoginResponseDto(
     }
 
     // 신규 회원용 응답 생성
-    public static SocialLoginResponseDto newMember(String email, String provider, String providerId , String nickname) {
+    public static SocialLoginResponseDto newMember(String email, String provider, String tempToken , String nickname) {
         return SocialLoginResponseDto.builder()
                 .isNewMember(true)
                 .email(email)
                 .provider(provider)
-                .providerId(providerId)
+                .tempToken(tempToken)
                 .nickname(nickname)
                 .build();
     }

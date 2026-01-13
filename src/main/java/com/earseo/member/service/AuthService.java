@@ -9,6 +9,7 @@ import com.earseo.member.entity.Provider;
 import com.earseo.member.entity.Role;
 import com.earseo.member.repository.MemberRepository;
 import com.earseo.member.service.oauth.GoogleOAuthService;
+import com.earseo.member.service.oauth.SocialSignUpTempService;
 import com.earseo.member.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,6 +30,7 @@ public class AuthService {
     private final RefreshTokenService refreshTokenService;
     private final EmailService emailService;
     private final EmailVerificationService emailVerificationService;
+    private final SocialSignUpTempService socialSignUpTempService;
 
     @Value("${member.default-profile-image}")
     private String defaultProfileImage;
@@ -155,6 +157,13 @@ public class AuthService {
 
     @Transactional
     public LoginResponseDto completeSocialSignUp(SocialSignUpRequestDto request) {
+
+        // tempToken으로 providerId 조회
+        String providerId = socialSignUpTempService.getProviderId(request.tempToken());
+        if (providerId == null) {
+            throw new BaseException(MemberErrorCode.INVALID_TEMP_TOKEN);
+        }
+
         // 이미 가입된 회원인지 확인
         validateDuplicateMember(request.email(), request.provider());
 
@@ -166,7 +175,7 @@ public class AuthService {
         Member member = Member.builder()
                 .email(request.email())
                 .provider(request.provider())
-                .providerId(request.providerId())
+                .providerId(providerId)
                 .nickname(request.nickname())
                 .gender(request.gender())
                 .birthdate(request.birthdate())
@@ -176,6 +185,9 @@ public class AuthService {
                 .build();
 
         Member savedMember = memberRepository.save(member);
+
+        // tempToken 삭제
+        socialSignUpTempService.deleteTempToken(request.tempToken());
 
         String accessToken = jwtUtil.generateAccessToken(
                 savedMember.getMemberId(),

@@ -27,7 +27,8 @@ public enum MemberErrorCode implements ErrorCodeInterface {
     APPLE_TOKEN_INVALID("MEM015", "유효하지 않은 Apple 토큰입니다.", HttpStatus.UNAUTHORIZED),
     APPLE_PUBLIC_KEY_NOT_FOUND("MEM016", "Apple 공개키를 찾을 수 없습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
     APPLE_TOKEN_EXPIRED("MEM017", "만료된 Apple 토큰입니다.", HttpStatus.UNAUTHORIZED),
-    APPLE_SERVER_ERROR("MEM018", "Apple 서버 연동 중 오류가 발생했습니다.", HttpStatus.SERVICE_UNAVAILABLE);
+    APPLE_SERVER_ERROR("MEM018", "Apple 서버 연동 중 오류가 발생했습니다.", HttpStatus.SERVICE_UNAVAILABLE),
+    INVALID_TEMP_TOKEN("MEM019", "유효하지 않거나 만료된 토큰입니다.", HttpStatus.BAD_REQUEST);
 
     private final String status;
     private final String message;
