@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "member")
@@ -48,7 +49,21 @@ public class Member extends BaseEntity{
     private LocalDate birthdate;
 
     @Column(length = 100)
-    private String nationality;
+    private  String nationality;
+
+    @Column
+    @Builder.Default
+    private Long reportCount = 0L;
+
+    @Column
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private Status status = Status.ACTIVE;
+
+    @Column
+    private LocalDateTime suspendEndDate;
+
+
 
     public void updateProfile(String nickname, Gender gender, LocalDate birthdate, String nationality) {
         this.nickname = nickname;
@@ -63,5 +78,19 @@ public class Member extends BaseEntity{
 
     public void updateProfileImage(String profileImage) {
         this.profileImage = profileImage;
+    }
+
+    public void updateReportCount(){
+        this.reportCount = this.reportCount+1;
+    }
+
+    public void ban() {
+        this.status = Status.BANNED;
+        this.suspendEndDate = null;
+    }
+
+    public void suspend(int i) {
+        this.status = Status.SUSPENDED;
+        this.suspendEndDate = LocalDateTime.now().plusDays(i);
     }
 }

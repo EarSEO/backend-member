@@ -2,11 +2,15 @@ package com.earseo.member.service;
 
 import com.earseo.member.common.exception.BaseException;
 import com.earseo.member.common.exception.MemberErrorCode;
+import com.earseo.member.dto.event.StoryReportEvent;
 import com.earseo.member.dto.request.PasswordUpdateRequestDto;
 import com.earseo.member.dto.request.ProfileUpdateRequestDto;
 import com.earseo.member.dto.response.*;
+import com.earseo.member.entity.EventType;
 import com.earseo.member.entity.Member;
 import com.earseo.member.entity.Provider;
+import com.earseo.member.entity.Status;
+import com.earseo.member.repository.EventTypeRepository;
 import com.earseo.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,6 +25,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final S3Service s3Service;
+    private final EventTypeRepository eventTypeRepository;
 
     @Transactional(readOnly = true)
     public ProfileResponseDto getProfile(Long memberId) {
@@ -108,5 +113,37 @@ public class MemberService {
         member.updateProfileImage(imageUrl);
 
         return imageUrl;
+    }
+
+    @Transactional
+    public void memberReported(StoryReportEvent data) {
+        Long memberId = data.reportedId();
+        Long storyId = data.storyId();
+        String type = String.valueOf(memberId) + String.valueOf(storyId);
+        if(eventTypeRepository.existsByType(type)){
+            return;
+        }
+
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new BaseException(MemberErrorCode.MEMBER_NOT_FOUND));
+
+        if(member.getStatus().equals(Status.BANNED)) return;
+
+        member.updateReportCount();
+
+        Long count = member.getReportCount();
+
+        if(count >= 20) {
+            member.ban();
+        } else if(count >= 15) {
+            member.suspend(30);
+        } else if(count >= 10) {
+            member.suspend(7);
+        } else if(count >= 5) {
+            member.suspend(3);
+        }
+
+        eventTypeRepository.save(EventType.builder()
+                        .type(type)
+                        .build());
     }
 }
