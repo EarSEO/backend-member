@@ -32,11 +32,11 @@ public class AuthController {
         return ResponseEntity.ok(BaseResponse.ok(response));
     }
 
-    @Operation(summary = "구글 로그인", description = "구글 OAuth2 로그인")
-    @GetMapping("/oauth/google")
-    public ResponseEntity<BaseResponse<SocialLoginResponseDto>> googleCallback(
-            @RequestParam("code") String code) {
-        SocialLoginResponseDto response = authService.googleLogin(code);
+    @Operation(summary = "구글 로그인", description = "구글 ID Token으로 로그인/회원가입 처리")
+    @PostMapping("/oauth/google")
+    public ResponseEntity<BaseResponse<SocialLoginResponseDto>> googleLogin(
+            @RequestBody GoogleLoginRequestDto request) {
+        SocialLoginResponseDto response = authService.googleLogin(request);
         return ResponseEntity.ok(BaseResponse.ok(response));
     }
 
