@@ -16,6 +16,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.gson.GsonFactory;
+import java.util.Collections;
 
 import java.util.Optional;
 
@@ -31,6 +36,9 @@ public class AuthService {
     private final EmailService emailService;
     private final EmailVerificationService emailVerificationService;
     private final SocialSignUpTempService socialSignUpTempService;
+
+    @Value("${oauth.google.client-id}")
+    private String googleClientId;
 
     @Value("${member.default-profile-image}")
     private String defaultProfileImage;
@@ -106,51 +114,50 @@ public class AuthService {
         );
     }
 
-    @Transactional(readOnly = true)
-    public SocialLoginResponseDto googleLogin(String code) {
-        // 구글에서 사용자 정보 조회
-        var tokenResponse = googleOAuthService.getAccessToken(code);
-        GoogleUserInfoResponse googleUser = googleOAuthService.getUserInfo(tokenResponse.accessToken());
+    @Transactional
+    public SocialLoginResponseDto googleLogin(GoogleLoginRequestDto request) {
+        GoogleIdToken.Payload payload = verifyGoogleIdToken(request.idToken());
 
-        // DB에서 회원 확인 (email + provider)
-        Optional<Member> memberOpt = memberRepository
-                .findByEmailAndProvider(googleUser.email(), Provider.GOOGLE);
+        String providerId = payload.getSubject();
+        String email = payload.getEmail();
+        String name = (String) payload.get("name");
 
-        if (memberOpt.isPresent()) {
-            // 기존 회원 - 로그인 처리
-            Member member = memberOpt.get();
+        Optional<Member> existingMember = memberRepository
+                .findByProviderAndProviderId(Provider.GOOGLE, providerId);
+
+        if (existingMember.isPresent()) {
+            Member member = existingMember.get();
 
             String accessToken = jwtUtil.generateAccessToken(
-                    member.getMemberId(),
-                    member.getEmail(),
-                    member.getRole()
-            );
+                    member.getMemberId(), member.getEmail(), member.getRole());
             String refreshToken = jwtUtil.generateRefreshToken(member.getMemberId());
 
             refreshTokenService.saveRefreshToken(
-                    member.getMemberId(),
-                    refreshToken,
-                    jwtUtil.getRefreshTokenExpiration()
-            );
+                    member.getMemberId(), refreshToken, jwtUtil.getRefreshTokenExpiration());
 
-            LoginResponseDto loginResponse = new LoginResponseDto(
-                    accessToken,
-                    refreshToken,
-                    member.getMemberId(),
-                    member.getEmail(),
-                    member.getNickname(),
-                    member.getRole()
-            );
+            return SocialLoginResponseDto.existing(new LoginResponseDto(
+                    accessToken, refreshToken, member.getMemberId(),
+                    member.getEmail(), member.getNickname(), member.getRole()));
+        }
 
-            return SocialLoginResponseDto.existing(loginResponse);
-        } else {
-            // 신규 회원 - 추가 정보 입력 필요
-            return SocialLoginResponseDto.newMember(
-                    googleUser.email(),
-                    "GOOGLE",
-                    googleUser.id(),  // Google의 providerId (sub 클레임)
-                    googleUser.name()  // 또는 null
-            );
+        String tempToken = socialSignUpTempService.createTempToken(providerId);
+        return SocialLoginResponseDto.newMember(email, "GOOGLE", tempToken, name);
+    }
+
+    private GoogleIdToken.Payload verifyGoogleIdToken(String idTokenString) {
+        try {
+            GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(
+                    new NetHttpTransport(), GsonFactory.getDefaultInstance())
+                    .setAudience(Collections.singletonList(googleClientId))
+                    .build();
+
+            GoogleIdToken idToken = verifier.verify(idTokenString);
+            if (idToken == null) {
+                throw new BaseException(MemberErrorCode.INVALID_GOOGLE_TOKEN);
+            }
+            return idToken.getPayload();
+        } catch (Exception e) {
+            throw new BaseException(MemberErrorCode.INVALID_GOOGLE_TOKEN);
         }
     }
 
