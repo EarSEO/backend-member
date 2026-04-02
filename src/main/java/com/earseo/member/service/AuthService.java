@@ -21,6 +21,7 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
 import java.util.Collections;
+import java.util.Arrays;
 
 import java.util.Optional;
 
@@ -39,6 +40,9 @@ public class AuthService {
 
     @Value("${oauth.google.client-id}")
     private String googleClientId;
+
+    @Value("${oauth.google.ios-client-id}")
+    private String googleIosClientId;
 
     @Value("${member.default-profile-image}")
     private String defaultProfileImage;
@@ -148,7 +152,7 @@ public class AuthService {
         try {
             GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(
                     new NetHttpTransport(), GsonFactory.getDefaultInstance())
-                    .setAudience(Collections.singletonList(googleClientId))
+                    .setAudience(Arrays.asList(googleClientId, googleIosClientId))
                     .build();
 
             GoogleIdToken idToken = verifier.verify(idTokenString);
